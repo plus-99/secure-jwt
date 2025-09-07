@@ -1,15 +1,7 @@
-import { verifyJWT, VerifyOptions, JWTPayload, InvalidTokenError } from './secure-jwt';
+import { verifyJWT } from './verify';
+import { VerifyOptions, JWTPayload, EnterpriseProvider } from './types';
+import { InvalidTokenError } from './errors';
 import fetch from 'node-fetch';
-
-// Enterprise provider configurations
-export interface EnterpriseProvider {
-  name: string;
-  jwksUri: string;
-  issuer: string;
-  audience?: string;
-  algorithms: string[];
-  description: string;
-}
 
 // Common enterprise providers
 export const ENTERPRISE_PROVIDERS: Record<string, (config: any) => EnterpriseProvider> = {

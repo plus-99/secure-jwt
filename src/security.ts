@@ -1,24 +1,7 @@
-import { JWTPayload, SecureAlgorithm } from './secure-jwt';
+import { JWTPayload, SecureAlgorithm, SecurityPolicy } from './types';
 
-// Security validation errors
-export class SecurityValidationError extends Error {
-  name = 'SecurityValidationError';
-  constructor(message: string) {
-    super(message);
-  }
-}
-
-// Security policies
-export interface SecurityPolicy {
-  maxTokenAge?: number; // seconds
-  requiredClaims?: string[];
-  forbiddenAlgorithms?: string[];
-  minimumKeyLength?: number;
-  requireHttps?: boolean;
-  allowedIssuers?: string[];
-  allowedAudiences?: string[];
-  clockToleranceMax?: number;
-}
+// Import SecurityValidationError from errors module
+import { SecurityValidationError } from './errors';
 
 // Default security policy (enterprise-grade)
 export const DEFAULT_SECURITY_POLICY: SecurityPolicy = {
