@@ -1,13 +1,14 @@
-# @plus99/secure-jwt Demo Project
+# @plus99/secure-jwt Library
 
 ## Overview
-This project demonstrates a secure JWT library implementation that addresses the security issues found in the popular `jsonwebtoken` library. The demo showcases modern security practices, TypeScript support, and improved developer experience.
+A professional, security-focused JWT library that provides a drop-in but safer alternative to `jsonwebtoken` while adding modern features. This library follows enterprise-grade security practices and provides comprehensive TypeScript support.
 
 ## Project Purpose
-- Demonstrate secure JWT handling with modern best practices
-- Show the differences between traditional JWT libraries and a security-focused approach
-- Provide an interactive web interface to test JWT operations
-- Implement TypeScript-native JWT operations with proper error handling
+- Provide a secure, production-ready JWT library for enterprise applications
+- Eliminate common JWT security misconfigurations 
+- Offer modern developer experience with TypeScript and async operations
+- Support enterprise identity providers (Auth0, AWS Cognito, Okta, etc.)
+- Include CLI tooling for DevOps workflows
 
 ## Key Features Implemented
 - ✅ **Secure by Default**: No support for the vulnerable "none" algorithm
@@ -16,48 +17,73 @@ This project demonstrates a secure JWT library implementation that addresses the
 - ✅ **Typed Errors**: Custom error classes for better error handling
 - ✅ **Async Operations**: Promise-based API for non-blocking operations
 - ✅ **JWKS Support**: Built-in support for JSON Web Key Sets with caching
-- ✅ **Interactive Demo**: Web interface for testing all features
+- ✅ **Enterprise Integrations**: Support for major identity providers
+- ✅ **Security Analysis**: Built-in security validation and recommendations
+- ✅ **CLI Tooling**: Command-line interface for DevOps workflows
+- ✅ **Interactive UI**: Next.js playground for testing and documentation
 
 ## Project Architecture
 
-### Core Library (`src/secure-jwt.ts`)
-- Main implementation of the secure JWT library
-- Custom error classes: `TokenExpiredError`, `InvalidSignatureError`, `InvalidTokenError`
-- Functions: `signJWT`, `verifyJWT`, `decodeJWT`, `isTokenExpired`
-- JWKS caching and remote key set support
+### Core Library (`src/`)
+- `index.ts` - Public API exports and main entry point
+- `sign.ts` - JWT signing implementation with secure defaults
+- `verify.ts` - JWT verification with strict validation
+- `errors.ts` - Custom error classes (TokenExpiredError, etc.)
+- `types.ts` - TypeScript interfaces and type definitions
+- `utils.ts` - Shared utilities and helper functions
+- `keys.ts` - JWKS handling and key management
+- `enterprise.ts` - Enterprise provider integrations
+- `security.ts` - Security validation and policy enforcement
 
-### Examples (`src/examples.ts`)
-- Comprehensive examples demonstrating all features
-- Feature comparison table
-- Security demonstration
+### Examples (`examples/`)
+- `sign-example.ts` - JWT signing examples with various options
+- `verify-example.ts` - JWT verification and error handling examples
+- `jwks-example.ts` - JWKS and enterprise provider examples
 
-### Web Server (`src/server.ts`)
-- Express.js server with interactive web interface
-- API endpoints for testing JWT operations
-- Real-time examples and feature demonstrations
+### Interactive UI (`ui/`)
+- Next.js application with React components
+- `pages/index.tsx` - Main playground interface
+- `components/SignForm.tsx` - JWT signing form
+- `components/VerifyForm.tsx` - JWT verification form
+- `pages/api/` - API routes for JWT operations
 
-## API Endpoints
-- `GET /` - Interactive web demo interface
-- `POST /api/login` - Generate JWT tokens
-- `GET /api/protected` - Protected route requiring valid JWT
-- `POST /api/verify` - Verify and analyze JWT tokens
-- `GET /api/examples` - Run comprehensive examples
-- `GET /health` - Service health check
+### Tests (`tests/`)
+- `sign.test.ts` - Comprehensive signing tests
+- `verify.test.ts` - Verification and error handling tests
+- `jwks.test.ts` - JWKS functionality tests
+
+## Available Scripts
+- `npm run build` - Compile TypeScript to JavaScript
+- `npm run dev` - Start Next.js development server
+- `npm run test` - Run Jest test suite
+- `npm run cli` - Access CLI tooling
+- `npm run examples:sign` - Run signing examples
+- `npm run examples:verify` - Run verification examples
+- `npm run examples:jwks` - Run JWKS examples
+
+## CLI Commands
+- `secure-jwt sign <payload>` - Sign JWT tokens
+- `secure-jwt verify <token>` - Verify JWT tokens
+- `secure-jwt decode <token>` - Decode tokens for debugging
+- `secure-jwt generate` - Generate sample payloads
+- `secure-jwt examples` - Show usage examples
 
 ## Current State
-The project is fully functional with:
-- Running web server on port 5000
-- Interactive demo interface
-- All JWT operations working correctly
-- Comprehensive examples and documentation
-- Security features properly implemented
+The library is production-ready with:
+- Professional modular structure
+- Running Next.js UI on port 5000
+- Comprehensive test coverage
+- Enterprise provider support
+- CLI tooling for DevOps
+- Security analysis features
 
 ## Technology Stack
 - **Runtime**: Node.js 20
 - **Language**: TypeScript
-- **Framework**: Express.js
+- **Frontend**: Next.js with React
 - **JWT Library**: jose (for cryptographic operations)
-- **Development**: ts-node for TypeScript execution
+- **Testing**: Jest with ts-jest
+- **Build**: TypeScript compiler
 
 ## Security Improvements Over Standard JWT Libraries
 1. **Algorithm Security**: Blocks insecure "none" algorithm completely
@@ -66,16 +92,20 @@ The project is fully functional with:
 4. **Error Transparency**: Typed error classes for precise error handling
 5. **Performance**: Async operations prevent event loop blocking
 6. **Key Management**: Built-in JWKS support with intelligent caching
+7. **Enterprise Ready**: Support for Auth0, AWS Cognito, Okta, Firebase, Azure AD
+8. **Security Analysis**: Built-in policy validation and recommendations
 
 ## Recent Changes
-- 2025-09-07: Initial project setup and complete implementation
-- Created secure JWT library with TypeScript support
-- Implemented interactive web demo with comprehensive examples
-- Added proper error handling and security features
-- Configured development workflow with live reload
+- 2025-09-07: Restructured into professional modular library
+- Split monolithic code into focused modules
+- Added Next.js interactive playground
+- Implemented comprehensive test suite
+- Added CLI tooling for DevOps workflows
+- Enhanced enterprise provider support
+- Added security analysis features
 
 ## User Preferences
+- Professional library structure with proper separation of concerns
 - TypeScript-first development approach
-- Security-focused implementation
-- Interactive demonstrations preferred
-- Clear documentation and examples
+- Security-focused implementation with enterprise features
+- Modern tooling and developer experience
