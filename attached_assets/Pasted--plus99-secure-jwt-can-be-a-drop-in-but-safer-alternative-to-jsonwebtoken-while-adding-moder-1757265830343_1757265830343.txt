@@ -1,0 +1,94 @@
+`@plus99/secure-jwt` can be a **drop-in but safer alternative** to `jsonwebtoken` while adding modern features. Let me break it down for you:
+
+
+
+# 🔐 `@plus99/secure-jwt`
+
+## 🚀 Why build this?
+
+The **jsonwebtoken** library (`jwt`) is widely used in Node.js, but:
+
+* ❌ Supports insecure `none` algorithm (often exploited).
+* ❌ Defaults are weak or unsafe (implicit alg choice, silent fallback).
+* ❌ No built-in key rotation or JWK/JWKS support.
+* ❌ Sync crypto APIs block the event loop.
+* ❌ Weak TypeScript support, poor DX (developer experience).
+
+👉 **@plus99/secure-jwt** fixes all of this with a **secure-by-default, async-first, TypeScript-native implementation.**
+
+---
+
+## 🛠️ Features & Significance
+
+| Feature           | `jsonwebtoken`               | `@plus99/secure-jwt`                                 | Why It Matters                      |
+| ----------------- | ---------------------------- | ---------------------------------------------------- | ----------------------------------- |
+| Algorithms        | Allows `none`, weak defaults | No `none`, strong algs only (HS256+, RS/ES/EdDSA)    | Prevents downgrade & bypass attacks |
+| Verification      | Fallbacks silently           | Strict algorithm enforcement                         | No “alg=none” exploits              |
+| Expiry/nbf claims | Optional                     | Enforced by default                                  | Secure default behavior             |
+| Key Rotation      | Manual, complex              | Built-in (local or JWKS URL)                         | Easier cloud / OIDC integration     |
+| Performance       | Blocking crypto              | Async, worker-thread ready                           | Non-blocking, scales better         |
+| Types             | Weak typings                 | Full TypeScript support                              | Better DX, safer coding             |
+| Errors            | Generic                      | Typed (`TokenExpiredError`, `InvalidSignatureError`) | Easier debugging                    |
+| CLI               | None                         | Built-in `npx secure-jwt sign/verify`                | Useful for ops/devs                 |
+
+---
+
+## 📦 Usage Examples
+
+### 1. Signing a Token
+
+```js
+import { signJWT } from "@plus99/secure-jwt";
+
+const token = await signJWT(
+  { sub: "user123", role: "admin" },
+  { secret: process.env.JWT_SECRET, alg: "HS256", expiresIn: "1h" }
+);
+
+console.log(token);
+```
+
+### 2. Verifying a Token
+
+```js
+import { verifyJWT } from "@plus99/secure-jwt";
+
+try {
+  const payload = await verifyJWT(token, { secret: process.env.JWT_SECRET, alg: "HS256" });
+  console.log("✅ Verified:", payload.sub);
+} catch (err) {
+  if (err.name === "TokenExpiredError") console.error("⏳ Token expired");
+  else console.error("❌ Invalid token");
+}
+```
+
+### 3. Using JWK / JWKS
+
+```js
+import { verifyJWT } from "@plus99/secure-jwt";
+
+const payload = await verifyJWT(token, { jwksUri: "https://my-issuer/.well-known/jwks.json" });
+```
+
+### 4. CLI Usage
+
+```bash
+# Sign
+npx secure-jwt sign payload.json --secret mysecret --alg HS256 --expiresIn 1h
+
+# Verify
+npx secure-jwt verify token.jwt --secret mysecret
+```
+
+---
+
+## 🌍 Who benefits?
+
+* **Developers** → safer defaults, async performance, typed APIs.
+* **Security teams** → eliminates common JWT misconfig mistakes.
+* **Enterprise apps** → easier integration with OpenID Connect, Auth0, AWS Cognito, etc.
+* **DevOps** → CLI tooling for scripting/debugging.
+
+---
+
+⚡ In short: `@plus99/secure-jwt` is **jsonwebtoken for 2025+** → **secure, async, typed, with key rotation and cloud-native support.**
