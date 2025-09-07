@@ -380,15 +380,9 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 Contributions are welcome! Please read our contributing guidelines and submit pull requests.
 
-## 🔐 Security
-
-For security issues, please email security@plus99.com instead of using the issue tracker.
-
 ## 📞 Support
 
-- 📖 [Documentation](https://docs.plus99.com/secure-jwt)
-- 💬 [Discussions](https://github.com/plus99/secure-jwt/discussions)
-- 🐛 [Issues](https://github.com/plus99/secure-jwt/issues)
+- 🐛 [Issues](https://github.com/plus-99/secure-jwt/issues)
 
 ---
 
