@@ -2,10 +2,14 @@
   "name": "@plus99/secure-jwt-demo",
   "version": "1.0.0",
   "main": "dist/server.js",
+  "bin": {
+    "secure-jwt": "dist/cli.js"
+  },
   "scripts": {
     "build": "tsc",
     "start": "node dist/server.js",
     "dev": "ts-node src/server.ts",
+    "cli": "ts-node src/cli.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -17,6 +21,7 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.3.1",
     "@types/node-fetch": "^2.6.13",
+    "commander": "^14.0.0",
     "express": "^5.1.0",
     "jose": "^6.1.0",
     "jsonwebtoken": "^9.0.2",
