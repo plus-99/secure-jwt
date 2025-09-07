@@ -78,7 +78,7 @@ async function getJWKS(jwksUri: string): Promise<any> {
     jwksCache.set(cacheKey, { data: jwks, timestamp: Date.now() });
     return jwks;
   } catch (error) {
-    throw new Error(`Failed to fetch JWKS from ${jwksUri}: ${error.message}`);
+    throw new Error(`Failed to fetch JWKS from ${jwksUri}: ${error instanceof Error ? error.message : String(error)}`);
   }
 }
 
@@ -125,7 +125,7 @@ export async function signJWT(payload: JWTPayload, options: SignOptions): Promis
 
     return await jwt.sign(secret);
   } catch (error) {
-    throw new Error(`Failed to sign JWT: ${error.message}`);
+    throw new Error(`Failed to sign JWT: ${error instanceof Error ? error.message : String(error)}`);
   }
 }
 
@@ -156,12 +156,16 @@ export async function verifyJWT(token: string, options: VerifyOptions): Promise<
 
     return payload as JWTPayload;
   } catch (error) {
-    if (error.code === 'ERR_JWT_EXPIRED') {
-      throw new TokenExpiredError('Token has expired');
-    } else if (error.code === 'ERR_JWS_SIGNATURE_VERIFICATION_FAILED') {
-      throw new InvalidSignatureError('Invalid token signature');
+    if (error instanceof Error) {
+      if (error.message.includes('expired')) {
+        throw new TokenExpiredError('Token has expired');
+      } else if (error.message.includes('signature')) {
+        throw new InvalidSignatureError('Invalid token signature');
+      } else {
+        throw new InvalidTokenError(`Invalid token: ${error.message}`);
+      }
     } else {
-      throw new InvalidTokenError(`Invalid token: ${error.message}`);
+      throw new InvalidTokenError(`Invalid token: ${String(error)}`);
     }
   }
 }
@@ -175,7 +179,7 @@ export function decodeJWT(token: string): { header: any; payload: JWTPayload } {
     const header = jose.decodeProtectedHeader(token);
     return { header, payload: decoded as JWTPayload };
   } catch (error) {
-    throw new InvalidTokenError(`Failed to decode token: ${error.message}`);
+    throw new InvalidTokenError(`Failed to decode token: ${error instanceof Error ? error.message : String(error)}`);
   }
 }
 
