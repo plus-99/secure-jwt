@@ -1,6 +1,8 @@
 import express from 'express';
 import { signJWT, verifyJWT, decodeJWT, isTokenExpired, TokenExpiredError, InvalidSignatureError, InvalidTokenError } from './secure-jwt';
 import { runExamples, demonstrateFeatures } from './examples';
+import { verifyEnterpriseJWT, ENTERPRISE_PROVIDERS, getEnterpriseProviderInfo, validateEnterpriseConfig } from './enterprise';
+import { validateJWTSecurity, generateSecurityAssessment, recommendAlgorithm, DEFAULT_SECURITY_POLICY, DEVELOPMENT_SECURITY_POLICY } from './security';
 
 const app = express();
 const PORT = 5000;
@@ -103,6 +105,18 @@ app.get('/', (req, res) => {
                 <p>Run comprehensive examples and feature demonstrations</p>
                 <button onclick="runExamples()">Run Examples</button>
             </div>
+
+            <div class="endpoint">
+                <h3>POST /api/enterprise/verify</h3>
+                <p>Verify tokens from enterprise providers (Auth0, AWS Cognito, etc.)</p>
+                <button onclick="testEnterpriseVerify()">Test Enterprise Verify</button>
+            </div>
+
+            <div class="endpoint">
+                <h3>POST /api/security/analyze</h3>
+                <p>Analyze token security and get recommendations</p>
+                <button onclick="analyzeTokenSecurity()">Analyze Security</button>
+            </div>
         </div>
 
         <div class="section">
@@ -163,6 +177,40 @@ app.get('/', (req, res) => {
                     const response = await fetch('/api/examples');
                     const data = await response.text();
                     document.getElementById('response').textContent = data;
+                } catch (error) {
+                    updateResponse({ error: error.message });
+                }
+            }
+
+            async function testEnterpriseVerify() {
+                const sampleToken = currentToken || prompt('Enter a JWT token to analyze:');
+                try {
+                    const response = await fetch('/api/enterprise/verify', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            token: sampleToken,
+                            provider: 'auth0',
+                            config: { domain: 'example.auth0.com' }
+                        })
+                    });
+                    const data = await response.json();
+                    updateResponse(data);
+                } catch (error) {
+                    updateResponse({ error: error.message });
+                }
+            }
+
+            async function analyzeTokenSecurity() {
+                const sampleToken = currentToken || prompt('Enter a JWT token to analyze:');
+                try {
+                    const response = await fetch('/api/security/analyze', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ token: sampleToken })
+                    });
+                    const data = await response.json();
+                    updateResponse(data);
                 } catch (error) {
                     updateResponse({ error: error.message });
                 }
@@ -340,6 +388,163 @@ app.get('/api/examples', async (req, res) => {
   }
 
   res.send(output);
+});
+
+// Enterprise verification endpoint
+app.post('/api/enterprise/verify', async (req, res) => {
+  try {
+    const { token, provider, config } = req.body;
+    
+    if (!token || !provider || !config) {
+      return res.status(400).json({ 
+        error: 'Token, provider, and config are required',
+        example: {
+          token: 'eyJ...',
+          provider: 'auth0',
+          config: { domain: 'your-domain.auth0.com' }
+        }
+      });
+    }
+
+    // Validate provider configuration
+    const configErrors = validateEnterpriseConfig(provider, config);
+    if (configErrors.length > 0) {
+      return res.status(400).json({
+        error: 'Invalid provider configuration',
+        details: configErrors
+      });
+    }
+
+    // Get provider info for demonstration (since we can't actually verify without real config)
+    const providerInfo = getEnterpriseProviderInfo(provider);
+    if (!providerInfo) {
+      return res.status(400).json({ error: `Unsupported provider: ${provider}` });
+    }
+
+    // For demo purposes, we'll decode the token and show what enterprise verification would look like
+    try {
+      const decoded = decodeJWT(token);
+      
+      res.json({
+        success: true,
+        provider: providerInfo.name,
+        description: providerInfo.description,
+        decoded_token: {
+          header: decoded.header,
+          payload: decoded.payload
+        },
+        enterprise_features: {
+          jwks_uri: providerInfo.jwksUri,
+          issuer_validation: providerInfo.issuer,
+          audience_validation: providerInfo.audience,
+          supported_algorithms: providerInfo.algorithms
+        },
+        demo_note: 'In production, this would verify against the actual JWKS endpoint'
+      });
+    } catch (error) {
+      res.status(400).json({
+        error: 'Failed to decode token for enterprise analysis',
+        details: error instanceof Error ? error.message : String(error)
+      });
+    }
+
+  } catch (error) {
+    res.status(500).json({ 
+      error: 'Enterprise verification failed', 
+      details: error instanceof Error ? error.message : String(error)
+    });
+  }
+});
+
+// Security analysis endpoint
+app.post('/api/security/analyze', async (req, res) => {
+  try {
+    const { token, policy = 'default' } = req.body;
+    
+    if (!token) {
+      return res.status(400).json({ error: 'Token is required' });
+    }
+
+    // Decode token for analysis
+    const decoded = decodeJWT(token);
+    const securityPolicy = policy === 'development' ? DEVELOPMENT_SECURITY_POLICY : DEFAULT_SECURITY_POLICY;
+    
+    // Generate security assessment
+    const assessment = generateSecurityAssessment(decoded.payload, decoded.header.alg, securityPolicy);
+    
+    // Get algorithm recommendation
+    const algorithmRec = recommendAlgorithm('enterprise');
+    
+    res.json({
+      security_score: assessment.score,
+      grade: assessment.score >= 90 ? 'A' : assessment.score >= 80 ? 'B' : assessment.score >= 70 ? 'C' : assessment.score >= 60 ? 'D' : 'F',
+      violations: assessment.violations,
+      warnings: assessment.warnings,
+      recommendations: assessment.recommendations,
+      token_analysis: {
+        algorithm: decoded.header.alg,
+        is_secure_algorithm: !['none', 'HS256'].includes(decoded.header.alg),
+        has_expiration: !!decoded.payload.exp,
+        has_proper_claims: ['sub', 'iat', 'exp'].every(claim => claim in decoded.payload),
+        lifetime_seconds: decoded.payload.exp && decoded.payload.iat ? decoded.payload.exp - decoded.payload.iat : null
+      },
+      algorithm_recommendation: {
+        suggested: algorithmRec.algorithm,
+        reasoning: algorithmRec.reasoning
+      },
+      security_tips: [
+        'Use asymmetric algorithms (RS256, ES256) for distributed systems',
+        'Always set expiration times (exp claim)',
+        'Include issuer (iss) and audience (aud) claims',
+        'Use HTTPS for all JWT operations',
+        'Rotate signing keys regularly',
+        'Validate all claims in your application'
+      ]
+    });
+
+  } catch (error) {
+    res.status(400).json({ 
+      error: 'Security analysis failed', 
+      details: error instanceof Error ? error.message : String(error)
+    });
+  }
+});
+
+// List enterprise providers endpoint
+app.get('/api/enterprise/providers', (req, res) => {
+  const providers = Object.keys(ENTERPRISE_PROVIDERS).map(key => {
+    const info = getEnterpriseProviderInfo(key);
+    return {
+      name: key,
+      display_name: info?.name,
+      description: info?.description,
+      algorithms: info?.algorithms
+    };
+  });
+  
+  res.json({ providers });
+});
+
+// CLI examples endpoint
+app.get('/api/cli/examples', (req, res) => {
+  res.json({
+    sign_examples: [
+      'npm run cli sign \'{"sub":"user123","role":"admin"}\' --secret mysecret --expires 2h',
+      'npm run cli sign payload.json --secret $JWT_SECRET --alg HS256',
+      'npm run cli sign \'{"service":"api"}\' --secret mysecret --issuer https://auth.company.com'
+    ],
+    verify_examples: [
+      'npm run cli verify $TOKEN --secret mysecret',
+      'npm run cli verify token.jwt --jwks-uri https://auth0.auth0.com/.well-known/jwks.json',
+      'npm run cli verify $TOKEN --secret mysecret --issuer https://auth.company.com'
+    ],
+    enterprise_examples: [
+      '# Auth0 verification',
+      'npm run cli verify $TOKEN --jwks-uri https://YOUR_DOMAIN.auth0.com/.well-known/jwks.json',
+      '# AWS Cognito verification',
+      'npm run cli verify $TOKEN --jwks-uri https://cognito-idp.REGION.amazonaws.com/USER_POOL_ID/.well-known/jwks.json'
+    ]
+  });
 });
 
 // Health check
