@@ -17,10 +17,23 @@
     "examples:verify": "ts-node examples/verify-example.ts",
     "examples:jwks": "ts-node examples/jwks-example.ts"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "jwt",
+    "json-web-token", 
+    "security",
+    "typescript",
+    "authentication",
+    "authorization",
+    "secure",
+    "enterprise",
+    "jwks",
+    "auth0",
+    "cognito",
+    "okta"
+  ],
+  "author": "@plus99",
   "license": "MIT",
-  "description": "",
+  "description": "A drop-in but safer alternative to jsonwebtoken with modern security practices, TypeScript support, and enterprise features",
   "dependencies": {
     "@types/express": "^5.0.3",
     "@types/jest": "^30.0.0",
