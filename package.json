@@ -34,6 +34,14 @@
   "author": "@plus99",
   "license": "MIT",
   "description": "A drop-in but safer alternative to jsonwebtoken with modern security practices, TypeScript support, and enterprise features",
+  "homepage": "https://github.com/plus99/secure-jwt#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/plus99/secure-jwt.git"
+  },
+  "bugs": {
+    "url": "https://github.com/plus99/secure-jwt/issues"
+  },
   "dependencies": {
     "@types/express": "^5.0.3",
     "@types/jest": "^30.0.0",
