@@ -1,6 +1,17 @@
 {
   "name": "@plus99/secure-jwt",
   "version": "1.0.0",
+  "author": "@plus99",
+  "license": "MIT",
+  "description": "A drop-in but safer alternative to jsonwebtoken with modern security practices, TypeScript support, and enterprise features",
+  "homepage": "https://github.com/plus-99/secure-jwt#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/plus-99/secure-jwt.git"
+  },
+  "bugs": {
+    "url": "https://github.com/plus-99/secure-jwt/issues"
+  },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
@@ -19,7 +30,7 @@
   },
   "keywords": [
     "jwt",
-    "json-web-token", 
+    "json-web-token",
     "security",
     "typescript",
     "authentication",
@@ -31,17 +42,6 @@
     "cognito",
     "okta"
   ],
-  "author": "@plus99",
-  "license": "MIT",
-  "description": "A drop-in but safer alternative to jsonwebtoken with modern security practices, TypeScript support, and enterprise features",
-  "homepage": "https://github.com/plus99/secure-jwt#readme",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/plus99/secure-jwt.git"
-  },
-  "bugs": {
-    "url": "https://github.com/plus99/secure-jwt/issues"
-  },
   "dependencies": {
     "@types/express": "^5.0.3",
     "@types/jest": "^30.0.0",
